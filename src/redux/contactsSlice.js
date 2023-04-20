@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { persistReducer } from 'redux-persist';
+import shortid from 'shortid';
 import storage from 'redux-persist/lib/storage';
 
 const initialState = [
@@ -16,16 +17,15 @@ const contactsSlice = createSlice({
     filters: '',
   },
   reducers: {
-    addContact(state, action) {
-      console.log(state);
-      console.log(action);
-      const isOnContacts = state.contacts.find(item => {
-        return item.name.toLowerCase() === action.payload.name.toLowerCase();
-      });
-
-      isOnContacts
-        ? alert(`${action.payload.name} is already in contacts`)
-        : state.contacts.push(action.payload);
+    addContact: {
+      reducer(state, action) {
+        state.contacts.push(action.payload);
+      },
+      prepare(payload) {
+        return {
+          payload: { ...payload, id: shortid.generate() },
+        };
+      },
     },
     deleteContact(state, action) {
       state.contacts = state.contacts.filter(contact => {
